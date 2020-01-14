@@ -1,22 +1,22 @@
 import 'dart:convert';
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/User.dart';
 import '../config/constants.dart';
 
-class Auth with ChangeNotifier {
+class AuthProvider with ChangeNotifier {
   String _token;
-  User _user;
+  UserModel _user;
 
   String get token {
     return _token;
   }
 
-  User get user {
+  UserModel get user {
     return _user;
   }
 
@@ -40,9 +40,9 @@ class Auth with ChangeNotifier {
     final token = prefs.getString('token');
     try {
       final res = await http.get(
-        '${BASE_URL}/auth/session',
+        '$BASE_URL/auth/session',
          headers: {
-          'Authorization': 'Bearer ${token}'
+          'Authorization': 'Bearer $token'
         }
       );
       final resData = json.decode(res.body);
@@ -57,22 +57,26 @@ class Auth with ChangeNotifier {
   
   Future<void> register(String name, String email, String password) async {
     try {
+      print(BASE_URL);
+      final body = json.encode({
+        'name': name,
+        'email': email,
+        'password': password
+      });
+      print(body);
       final res = await http.post(
-        '${BASE_URL}/auth/register', 
-        body: json.encode(
-          {
-            'name': name,
-            'email': email,
-            'password': password
-          }
-        )
+        '$BASE_URL/auth/register', 
+        body: body
       );
+      print(res);
+      print(res.body);
       final resData = json.decode(res.body);
       _token = resData['token'];
       _user = resData['user'];
       notifyListeners();
       saveToken(_token);
     } catch (err) {
+      print(err);
       throw err;
     }
   }
@@ -80,7 +84,7 @@ class Auth with ChangeNotifier {
   Future<void> login(String email, String password) async {
     try {
       final res = await http.post(
-       '${BASE_URL}/auth/login', 
+       '$BASE_URL/auth/login', 
         body: json.encode(
           {
             'email': email,
@@ -102,9 +106,9 @@ class Auth with ChangeNotifier {
     if (_token == null) return;
     try {
       await http.get(
-        '${BASE_URL}/auth/logout', 
+        '$BASE_URL/auth/logout', 
         headers: {
-          'Authorization': 'Bearer ${token}'
+          'Authorization': 'Bearer $token'
         }
       );
       await clearToken();
