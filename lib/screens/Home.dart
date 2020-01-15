@@ -22,7 +22,7 @@ class HomeState extends State<Home> {
     //   _isLoading = false;
     // });
     // _isInit = false;
-    // super.didChangeDependencies();
+    super.didChangeDependencies();
   }
 
   @override

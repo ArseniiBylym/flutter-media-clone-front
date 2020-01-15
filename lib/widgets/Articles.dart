@@ -10,16 +10,16 @@ class Articles extends StatelessWidget {
   Widget build(BuildContext context) {
     final articlesData = Provider.of<ArticlesProvider>(context);
     final articles = articlesData.list;
-    return GridView.builder(
-        padding: const EdgeInsets.all(10.0),
-        itemCount: articles.length,
-        itemBuilder: (ctx, i) => ArticleItem(articles[i]),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 1,
-        childAspectRatio: 3 / 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
-    );
+    return articles.length > 0 
+      ? GridView.builder(
+          padding: const EdgeInsets.all(10.0),
+          itemCount: articles.length,
+          itemBuilder: (ctx, i) => ArticleItem(articles[i]),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            childAspectRatio: 3 / 2,
+            crossAxisCount: 1,
+          )
+        )
+      : Center(child: Text('Articles list is empty for now'),);
   }
 }

@@ -40,39 +40,48 @@ class AuthProvider with ChangeNotifier {
     final token = prefs.getString('token');
     try {
       final res = await http.get(
-        '$BASE_URL/auth/session',
+        '$BASE_URL/auth/me',
          headers: {
           'Authorization': 'Bearer $token'
         }
       );
-      final resData = json.decode(res.body);
+     final resData = jsonDecode(res.body);
       _token = token;
-      _user = resData['user'];
+      _user = UserModel(
+        resData['_id'],
+        resData['name'],
+        resData['email'],
+        resData['avatar']
+      );
       notifyListeners();
     } catch(err) {
+      print(err);
       await clearToken();
       throw err;
     }
   }
   
-  Future<void> register(String name, String email, String password) async {
+  Future<void> register(String name, String email, String password, String password_confirm) async {
     try {
-      print(BASE_URL);
-      final body = json.encode({
+      final body = jsonEncode({
         'name': name,
         'email': email,
-        'password': password
+        'password': password,
+        'password_confirm': password_confirm
       });
-      print(body);
       final res = await http.post(
         '$BASE_URL/auth/register', 
-        body: body
+        body: body,
+        headers: {'Content-type': 'application/json'}
       );
-      print(res);
-      print(res.body);
-      final resData = json.decode(res.body);
+      final resData = jsonDecode(res.body);
       _token = resData['token'];
-      _user = resData['user'];
+      _user = UserModel(
+        resData['user']['_id'],
+        resData['user']['name'],
+        resData['user']['email'],
+        resData['user']['avatar']
+      );
       notifyListeners();
       saveToken(_token);
     } catch (err) {
@@ -85,19 +94,26 @@ class AuthProvider with ChangeNotifier {
     try {
       final res = await http.post(
        '$BASE_URL/auth/login', 
-        body: json.encode(
+        body: jsonEncode(
           {
             'email': email,
             'password': password
           }
-        )
+        ),
+        headers: {'Content-type': 'application/json'}
       );
-      final resData = json.decode(res.body);
+      final resData = jsonDecode(res.body);
       _token = resData['token'];
-      _user = resData['user'];
+      _user = UserModel(
+        resData['user']['_id'],
+        resData['user']['name'],
+        resData['user']['email'],
+        resData['user']['avatar']
+      );
       notifyListeners();
       saveToken(_token);
     } catch (err) {
+      print(err);
       throw err;
     }
   }
@@ -115,6 +131,7 @@ class AuthProvider with ChangeNotifier {
       _user = null;
       _token = null;
     } catch (err) {
+      print(err);
       throw err;
     }
   }

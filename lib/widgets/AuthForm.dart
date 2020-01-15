@@ -23,7 +23,8 @@ class AuthFormState extends State<AuthForm> {
   Map<String, String> _authData = {
     'name': '',
     'email': '',
-    'password': ''
+    'password': '',
+    'password_confirm': ''
   };
   var _isLoading = false;
   final _passwordController = TextEditingController();
@@ -48,8 +49,10 @@ class AuthFormState extends State<AuthForm> {
           _authData['name'],
           _authData['email'],
           _authData['password'],
+          _authData['password_confirm'],
         );
       }
+      Navigator.of(context).pushNamed('/');
     } catch (err) {
       const errorMessage = 'Authentification failed. Try again later';
       _showErrorDialog(errorMessage);
@@ -119,6 +122,9 @@ class AuthFormState extends State<AuthForm> {
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Confirm password'),
                     obscureText: true,
+                    onSaved: (value) {
+                      _authData['password_confirm'] = value;
+                    },
                     validator: (value) {
                       if (value != _passwordController.text) {
                         return 'Password do not match';

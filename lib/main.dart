@@ -6,6 +6,7 @@ import './providers/articles.dart';
 import './screens/Home.dart';
 import './screens/Article.dart';
 import './screens/Auth.dart';
+import './screens/Loading.dart';
 
 void main() => runApp(MyApp());
 
@@ -28,7 +29,13 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.blue,
             fontFamily: 'Lato'
           ),
-          home: Home(),
+          home: auth.isAuth
+            ? Home()
+            : FutureBuilder(
+                future: auth.init(),
+                builder: (ctx, authResultSnapshot) => 
+                  authResultSnapshot.connectionState == ConnectionState.waiting ? Loading() : Home(),
+            ),
           routes: {
             '/article': (ctx) => Article(),
             '/auth': (ctx) => Auth(),

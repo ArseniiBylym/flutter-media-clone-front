@@ -18,7 +18,7 @@ class ArticlesProvider with ChangeNotifier {
     try {
       final res = await http.get('$BASE_URL/articles');
       print(res);
-      final resData = json.decode(res.body) as List<dynamic>;
+      final resData = jsonDecode(res.body) as List<dynamic>;
       final List<ArticleModel> loadedArticles = [];
       resData.forEach((item) {
         loadedArticles.add(ArticleModel(
